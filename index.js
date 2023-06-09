@@ -9,7 +9,7 @@ canvas.height = 576;
 // задаємо колір канвасу
 c.fillRect(0, 0, canvas.width, canvas.height);
 
-const gravity = 0.2
+const gravity = 0.7
 
 // створили клас який додає наших гарвців
 class Sprite{
@@ -18,6 +18,11 @@ class Sprite{
     this.velocity = velocity;
     this.height = 150
     this.lastKey
+    this.attackBox = {
+      position: this.position,
+      width: 100,
+      height: 50,
+    }
   }
 // метод класу який по кординат може намалювати гравців 
   draw() {
@@ -25,6 +30,9 @@ class Sprite{
     c.fillStyle = 'red'
     // позіцонування гравців відповідно методу 
     c.fillRect(this.position.x, this.position.y, 50, this.height)
+
+    // малюю промокутник для атаки для гравців
+    c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
   }
 
 // функція яка приймає метод draw() та перемальовує анімацію
@@ -85,7 +93,7 @@ const key = {
   }
 }
 
-let lastKey;
+// let lastKey;
 
 // фукция котороа постійно перемальвоє анімацію в циклі (безкінечна до поки ми не припинимо)
 function animate() {
@@ -104,17 +112,17 @@ function animate() {
   enemy.velocity.x = 0
 
   // player movement
-  if(key.a.pressed && lastKey === 'a'){
-    player.velocity.x = -1 
-  } else if(key.d.pressed && lastKey === 'd'){
-    player.velocity.x = 1
+  if(key.a.pressed && player.lastKey === 'a'){
+    player.velocity.x = -5 
+  } else if(key.d.pressed && player.lastKey === 'd'){
+    player.velocity.x = 5
   }
 
     // enemy movement
     if(key.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft'){
-      enemy.velocity.x = -1 
+      enemy.velocity.x = -5 
     } else if(key.ArrowRight.pressed && enemy.lastKey === 'ArrowRight'){
-      enemy.velocity.x = 1
+      enemy.velocity.x = 5
     }
 }
 
@@ -124,14 +132,14 @@ window.addEventListener('keydown', (event) => {
   switch (event.key) {
     case 'd':
       key.d.pressed = true
-      lastKey = 'd'
+      player.lastKey = 'd'
       break;
       case 'a':
       key.a.pressed = true
-      lastKey = 'a'
+      player.lastKey = 'a'
         break;
       case 'w':
-        player.velocity.y = -10
+        player.velocity.y = -20
         break;  
 
         case 'ArrowRight':
@@ -143,7 +151,7 @@ window.addEventListener('keydown', (event) => {
           enemy.lastKey = 'ArrowLeft'
             break;
           case 'ArrowUp':
-            enemy.velocity.y = -10
+            enemy.velocity.y = -20
             break;  
   }
 console.log(event.key)
