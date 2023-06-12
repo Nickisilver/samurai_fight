@@ -9,178 +9,250 @@ canvas.height = 576;
 // задаємо колір канвасу
 c.fillRect(0, 0, canvas.width, canvas.height);
 
-const gravity = 0.7
+const gravity = 0.7;
 
 // створили клас який додає наших гарвців
-class Sprite{
-  constructor({position, velocity}) {
+class Sprite {
+  constructor({ position, velocity, color = "red", offset }) {
     this.position = position;
     this.velocity = velocity;
-    this.height = 150
-    this.lastKey
+    this.width = 50;
+    this.height = 150;
+    this.lastKey;
     this.attackBox = {
-      position: this.position,
+      position: {
+        x: this.position.x,
+        y: this.position.y,
+      },
+      offset,
       width: 100,
       height: 50,
+    };
+    this.color = color;
+    this.isAttacking;
+  }
+  // метод класу який по кординат може намалювати гравців
+  draw() {
+    // стиль для гравців
+    c.fillStyle = this.color;
+    // позіцонування гравців відповідно методу
+    c.fillRect(this.position.x, this.position.y, this.width, this.height);
+
+    //  attack box
+    if(this.isAttacking){
+    // малюю промокутник для атаки для гравців
+    c.fillStyle = "green";
+    c.fillRect(
+      this.attackBox.position.x,
+      this.attackBox.position.y,
+      this.attackBox.width,
+      this.attackBox.height
+    );
     }
   }
-// метод класу який по кординат може намалювати гравців 
-  draw() {
-    // стиль для гравців 
-    c.fillStyle = 'red'
-    // позіцонування гравців відповідно методу 
-    c.fillRect(this.position.x, this.position.y, 50, this.height)
 
-    // малюю промокутник для атаки для гравців
-    c.fillRect(this.attackBox.position.x, this.attackBox.position.y, this.attackBox.width, this.attackBox.height)
-  }
-
-// функція яка приймає метод draw() та перемальовує анімацію
+  // функція яка приймає метод draw() та перемальовує анімацію
   update() {
     this.draw();
-    this.position.x += this.velocity.x
+
+    this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
+    this.attackBox.position.y = this.position.y;
+
+    this.position.x += this.velocity.x;
     this.position.y += this.velocity.y;
 
-    if(this.position.y + this.height + this.velocity.y >= canvas.height){
+    if (this.position.y + this.height + this.velocity.y >= canvas.height) {
       this.velocity.y = 0;
     } else this.velocity.y += gravity;
+  }
+
+  attack() {
+    this.isAttacking = true;
+    setTimeout(() => {
+      this.isAttacking = false;
+    }, 100);
   }
 }
 
 // намалював Player
 const player = new Sprite({
   position: {
-  x: 0,
-  y: 0,
+    x: 0,
+    y: 0,
   },
   velocity: {
     x: 0,
     y: 0,
-  }
-})
-
+  },
+  offset: {
+    x: 0,
+    y: 0,
+  },
+});
 
 // намалював Enemy
 const enemy = new Sprite({
   position: {
-  x: 400,
-  y: 100,
+    x: 400,
+    y: 100,
   },
   velocity: {
     x: 0,
     y: 0,
-  }
-})
+  },
+  color: "blue",
+  offset: {
+    x: -50,
+    y: 0,
+  },
+});
 
-
-console.log(player)
+console.log(player);
 
 const key = {
-  a:{
+  a: {
     pressed: false,
   },
-  d:{
+  d: {
     pressed: false,
   },
-  w:{
+  w: {
     pressed: false,
   },
   ArrowRight: {
-    pressed: false
+    pressed: false,
   },
   ArrowLeft: {
-    pressed: false
-  }
-}
+    pressed: false,
+  },
+};
 
 // let lastKey;
+
+function rectangularCollision({ rectangle1, rectangle2 }){
+  return (
+    rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x &&
+    rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width &&
+    rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y &&
+    rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height
+  )
+}
 
 // фукция котороа постійно перемальвоє анімацію в циклі (безкінечна до поки ми не припинимо)
 function animate() {
   // window.requestAnimationFrame указывает браузеру на то, что вы хотите произвести анимацию, и просит его запланировать перерисовку на следующем кадре анимации. В качестве параметра метод получает функцию, которая будет вызвана перед перерисовкой.
-  window.requestAnimationFrame(animate)
+  window.requestAnimationFrame(animate);
   // console.log('go')
 
- c.fillStyle = 'black'
-  // 
-  c.fillRect(0, 0, canvas.width, canvas.height)
-  // 
-  player.update()
-  enemy.update()
+  c.fillStyle = "black";
+  //
+  c.fillRect(0, 0, canvas.width, canvas.height);
+  //
+  player.update();
+  enemy.update();
 
-  player.velocity.x = 0
-  enemy.velocity.x = 0
+  player.velocity.x = 0;
+  enemy.velocity.x = 0;
 
   // player movement
-  if(key.a.pressed && player.lastKey === 'a'){
-    player.velocity.x = -5 
-  } else if(key.d.pressed && player.lastKey === 'd'){
-    player.velocity.x = 5
+  if (key.a.pressed && player.lastKey === "a") {
+    player.velocity.x = -5;
+  } else if (key.d.pressed && player.lastKey === "d") {
+    player.velocity.x = 5;
   }
 
-    // enemy movement
-    if(key.ArrowLeft.pressed && enemy.lastKey === 'ArrowLeft'){
-      enemy.velocity.x = -5 
-    } else if(key.ArrowRight.pressed && enemy.lastKey === 'ArrowRight'){
-      enemy.velocity.x = 5
-    }
+  // enemy movement
+  if (key.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
+    enemy.velocity.x = -5;
+  } else if (key.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
+    enemy.velocity.x = 5;
+  }
+
+  // detect for collision
+  if (
+   rectangularCollision({
+    rectangle1: player,
+    rectangle2: enemy,
+   }) &&
+    player.isAttacking
+  ) {
+    player.isAttacking = false;
+    console.log("go");
+  }
+
+  if (
+    rectangularCollision({
+     rectangle1: enemy,
+     rectangle2: player,
+    }) &&
+     enemy.isAttacking
+   ) {
+     enemy.isAttacking = false;
+     console.log("ememy attack successful");
+   }
 }
 
-animate()
+animate();
 
-window.addEventListener('keydown', (event) => {
+window.addEventListener("keydown", (event) => {
   switch (event.key) {
-    case 'd':
-      key.d.pressed = true
-      player.lastKey = 'd'
+    case "d":
+      key.d.pressed = true;
+      player.lastKey = "d";
       break;
-      case 'a':
-      key.a.pressed = true
-      player.lastKey = 'a'
-        break;
-      case 'w':
-        player.velocity.y = -20
-        break;  
+    case "a":
+      key.a.pressed = true;
+      player.lastKey = "a";
+      break;
+    case "w":
+      player.velocity.y = -20;
+      break;
+    case " ":
+      player.attack();
+      break;
 
-        case 'ArrowRight':
-          key.ArrowRight.pressed = true
-          enemy.lastKey = 'ArrowRight'
-          break;
-          case 'ArrowLeft':
-          key.ArrowLeft.pressed = true
-          enemy.lastKey = 'ArrowLeft'
-            break;
-          case 'ArrowUp':
-            enemy.velocity.y = -20
-            break;  
+    case "ArrowRight":
+      key.ArrowRight.pressed = true;
+      enemy.lastKey = "ArrowRight";
+      break;
+    case "ArrowLeft":
+      key.ArrowLeft.pressed = true;
+      enemy.lastKey = "ArrowLeft";
+      break;
+    case "ArrowUp":
+      enemy.velocity.y = -20;
+      break;
+      case "ArrowDown":
+        enemy.isAttacking = true;
+        break;
   }
-console.log(event.key)
-})
+  // console.log(event.key);
+});
 
-window.addEventListener('keyup', (event) => {
+window.addEventListener("keyup", (event) => {
   switch (event.key) {
-    case 'd':
-      key.d.pressed = false
+    case "d":
+      key.d.pressed = false;
       break;
-      case 'a':
-        key.a.pressed = false
-        break;
-      // case 'w':
-      //   key.w.pressed = false
-      //   break;
+    case "a":
+      key.a.pressed = false;
+      break;
+    // case 'w':
+    //   key.w.pressed = false
+    //   break;
   }
 
   // enemy keys
   switch (event.key) {
-    case 'ArrowRight':
-      key.ArrowRight.pressed = false
+    case "ArrowRight":
+      key.ArrowRight.pressed = false;
       break;
-      case 'ArrowLeft':
-        key.ArrowLeft.pressed = false
-        break;
-      // case 'ArrowLeft':
-      //   key.w.pressed = false
-      //   break;
+    case "ArrowLeft":
+      key.ArrowLeft.pressed = false;
+      break;
+    // case 'ArrowLeft':
+    //   key.w.pressed = false
+    //   break;
   }
-console.log(event.key)
-})
+  // console.log(event.key);
+});
