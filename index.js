@@ -30,8 +30,9 @@ class Sprite {
     };
     this.color = color;
     this.isAttacking;
+    this.health = 100
   }
-  // метод класу який по кординат може намалювати гравців
+  // метод класу який по кординатам може намалювати гравців
   draw() {
     // стиль для гравців
     c.fillStyle = this.color;
@@ -138,6 +139,41 @@ function rectangularCollision({ rectangle1, rectangle2 }){
   )
 }
 
+function determineWinner({player, enemy, timerId}){
+  clearTimeout(timerId)
+  document.querySelector('#dispalyText').style.display = 'flex'
+  if(player.health === enemy.health){
+    document.querySelector('#dispalyText').innerHTML = 'Tie'
+  } else if(player.health > enemy.health) {
+    document.querySelector('#dispalyText').innerHTML = 'Player 1 Win'
+    
+  }  else if(player.health < enemy.health) {
+    document.querySelector('#dispalyText').innerHTML = 'Player 2 Win'
+    
+  }
+}
+
+let timer = 60
+let timerId
+// функція тайменра 
+function decreaseTimer() {
+  if(timer > 0){
+   timerId = setTimeout(decreaseTimer,1000)
+    timer--
+    document.querySelector('#timer').innerHTML = timer
+  }
+
+
+  if(timer === 0){
+   
+    determineWinner({player, enemy, timerId})
+   
+  }
+
+}
+
+decreaseTimer()
+
 // фукция котороа постійно перемальвоє анімацію в циклі (безкінечна до поки ми не припинимо)
 function animate() {
   // window.requestAnimationFrame указывает браузеру на то, что вы хотите произвести анимацию, и просит его запланировать перерисовку на следующем кадре анимации. В качестве параметра метод получает функцию, которая будет вызвана перед перерисовкой.
@@ -177,7 +213,9 @@ function animate() {
     player.isAttacking
   ) {
     player.isAttacking = false;
-    console.log("go");
+    enemy.health -= 20
+   document.querySelector('#enemyHealth').style.width = enemy.health + '%'
+  //  console.log('player attack successful')
   }
 
   if (
@@ -188,8 +226,14 @@ function animate() {
      enemy.isAttacking
    ) {
      enemy.isAttacking = false;
-     console.log("ememy attack successful");
+     player.health -= 20
+     document.querySelector('#playerHealth').style.width = player.health + '%'
    }
+
+  //  end of game based on health
+  if(enemy.health <= 0 || player.health <= 0){
+    determineWinner({player, enemy, timerId})
+  }
 }
 
 animate();
@@ -223,10 +267,10 @@ window.addEventListener("keydown", (event) => {
       enemy.velocity.y = -20;
       break;
       case "ArrowDown":
-        enemy.isAttacking = true;
+        enemy.attack() 
         break;
   }
-  // console.log(event.key);
+  console.log(event.key);
 });
 
 window.addEventListener("keyup", (event) => {
@@ -254,5 +298,5 @@ window.addEventListener("keyup", (event) => {
     //   key.w.pressed = false
     //   break;
   }
-  // console.log(event.key);
+  console.log(event.key);
 });
