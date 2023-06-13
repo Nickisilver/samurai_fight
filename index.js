@@ -11,72 +11,17 @@ c.fillRect(0, 0, canvas.width, canvas.height);
 
 const gravity = 0.7;
 
+const background = new Sprite({
+  position: {
+    x: 0,
+    y: 0,
+  },
+  imageSrc: './oak_woods_v1.0/background/fightf.png'
+})
 // створили клас який додає наших гарвців
-class Sprite {
-  constructor({ position, velocity, color = "red", offset }) {
-    this.position = position;
-    this.velocity = velocity;
-    this.width = 50;
-    this.height = 150;
-    this.lastKey;
-    this.attackBox = {
-      position: {
-        x: this.position.x,
-        y: this.position.y,
-      },
-      offset,
-      width: 100,
-      height: 50,
-    };
-    this.color = color;
-    this.isAttacking;
-    this.health = 100
-  }
-  // метод класу який по кординатам може намалювати гравців
-  draw() {
-    // стиль для гравців
-    c.fillStyle = this.color;
-    // позіцонування гравців відповідно методу
-    c.fillRect(this.position.x, this.position.y, this.width, this.height);
-
-    //  attack box
-    if(this.isAttacking){
-    // малюю промокутник для атаки для гравців
-    c.fillStyle = "green";
-    c.fillRect(
-      this.attackBox.position.x,
-      this.attackBox.position.y,
-      this.attackBox.width,
-      this.attackBox.height
-    );
-    }
-  }
-
-  // функція яка приймає метод draw() та перемальовує анімацію
-  update() {
-    this.draw();
-
-    this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-    this.attackBox.position.y = this.position.y;
-
-    this.position.x += this.velocity.x;
-    this.position.y += this.velocity.y;
-
-    if (this.position.y + this.height + this.velocity.y >= canvas.height) {
-      this.velocity.y = 0;
-    } else this.velocity.y += gravity;
-  }
-
-  attack() {
-    this.isAttacking = true;
-    setTimeout(() => {
-      this.isAttacking = false;
-    }, 100);
-  }
-}
 
 // намалював Player
-const player = new Sprite({
+const player = new Fighter({
   position: {
     x: 0,
     y: 0,
@@ -92,7 +37,7 @@ const player = new Sprite({
 });
 
 // намалював Enemy
-const enemy = new Sprite({
+const enemy = new Fighter({
   position: {
     x: 400,
     y: 100,
@@ -139,38 +84,7 @@ function rectangularCollision({ rectangle1, rectangle2 }){
   )
 }
 
-function determineWinner({player, enemy, timerId}){
-  clearTimeout(timerId)
-  document.querySelector('#dispalyText').style.display = 'flex'
-  if(player.health === enemy.health){
-    document.querySelector('#dispalyText').innerHTML = 'Tie'
-  } else if(player.health > enemy.health) {
-    document.querySelector('#dispalyText').innerHTML = 'Player 1 Win'
-    
-  }  else if(player.health < enemy.health) {
-    document.querySelector('#dispalyText').innerHTML = 'Player 2 Win'
-    
-  }
-}
 
-let timer = 60
-let timerId
-// функція тайменра 
-function decreaseTimer() {
-  if(timer > 0){
-   timerId = setTimeout(decreaseTimer,1000)
-    timer--
-    document.querySelector('#timer').innerHTML = timer
-  }
-
-
-  if(timer === 0){
-   
-    determineWinner({player, enemy, timerId})
-   
-  }
-
-}
 
 decreaseTimer()
 
@@ -184,6 +98,7 @@ function animate() {
   //
   c.fillRect(0, 0, canvas.width, canvas.height);
   //
+  background.update()
   player.update();
   enemy.update();
 
