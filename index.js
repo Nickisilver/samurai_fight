@@ -16,7 +16,19 @@ const background = new Sprite({
     x: 0,
     y: 0,
   },
-  imageSrc: './oak_woods_v1.0/background/fightf.png'
+  imageSrc: './oak_woods_v1.0/background/fightf.png',
+  scale: 0.75,
+  
+})
+
+const shop = new Sprite({
+  position: {
+    x: 50,
+    y:284,
+  },
+  imageSrc: './oak_woods_v1.0/decorations/shop_anim.png',
+  scale: 2.30,
+  framesMax: 6
 })
 // створили клас який додає наших гарвців
 
@@ -99,6 +111,7 @@ function animate() {
   c.fillRect(0, 0, canvas.width, canvas.height);
   //
   background.update()
+  shop.update()
   player.update();
   enemy.update();
 
