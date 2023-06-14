@@ -46,6 +46,13 @@ const player = new Fighter({
     x: 0,
     y: 0,
   },
+  imageSrc: './oak_woods_v1.0/Sprites/Idle.png',
+  framesMax: 8,
+  scale: 2,
+  offset: {
+    x:100,
+    y:95,
+  }
 });
 
 // намалював Enemy
@@ -113,7 +120,7 @@ function animate() {
   background.update()
   shop.update()
   player.update();
-  enemy.update();
+  // enemy.update();
 
   player.velocity.x = 0;
   enemy.velocity.x = 0;
