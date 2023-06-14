@@ -52,6 +52,17 @@ const player = new Fighter({
   offset: {
     x:100,
     y:95,
+  },
+  sprites: {
+    idle:{
+      imageSrc: './oak_woods_v1.0/Sprites/Idle.png',
+      framesMax: 8
+    },
+    run:{
+      imageSrc:  './oak_woods_v1.0/Sprites/Run.png',
+      framesMax: 8,
+      image: new Image(),
+    },
   }
 });
 
@@ -126,10 +137,13 @@ function animate() {
   enemy.velocity.x = 0;
 
   // player movement
+  player.image = player.sprites.idle.image
   if (key.a.pressed && player.lastKey === "a") {
     player.velocity.x = -5;
+    player.image = player.sprites.run.image
   } else if (key.d.pressed && player.lastKey === "d") {
     player.velocity.x = 5;
+    player.image = player.sprites.run.image
   }
 
   // enemy movement
