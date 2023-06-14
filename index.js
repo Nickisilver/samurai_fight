@@ -82,7 +82,7 @@ const player = new Fighter({
 // намалював Enemy
 const enemy = new Fighter({
   position: {
-    x: 400,
+    x: 800,
     y: 100,
   },
   velocity: {
@@ -94,6 +94,37 @@ const enemy = new Fighter({
     x: -50,
     y: 0,
   },
+  imageSrc: './oak_woods_v1.0/Sprites/Idle.png',
+  framesMax: 8,
+  scale: 2,
+  offset: {
+    x:200,
+    y:95,
+  },
+  sprites: {
+    idle:{
+      imageSrc: './oak_woods_v1.0/Sprites/Idle.png',
+      framesMax: 8
+    },
+    run:{
+      imageSrc:  './oak_woods_v1.0/Sprites/Run.png',
+      framesMax: 8,
+     
+    },
+    jump:{
+      imageSrc:  './oak_woods_v1.0/Sprites/Jump.png',
+      framesMax: 2,
+     
+    },
+    fall:{
+      imageSrc:  './oak_woods_v1.0/Sprites/fall.png',
+      framesMax: 2,
+    },
+    attack1:{
+      imageSrc:  './oak_woods_v1.0/Sprites/Attack1.png',
+      framesMax: 6,
+    },
+  }
 });
 
 console.log(player);
@@ -144,7 +175,7 @@ function animate() {
   background.update()
   shop.update()
   player.update();
-  // enemy.update();
+  enemy.update();
 
   player.velocity.x = 0;
   enemy.velocity.x = 0;
@@ -171,8 +202,19 @@ function animate() {
   // enemy movement
   if (key.ArrowLeft.pressed && enemy.lastKey === "ArrowLeft") {
     enemy.velocity.x = -5;
+    enemy.switchSprite('run')
   } else if (key.ArrowRight.pressed && enemy.lastKey === "ArrowRight") {
     enemy.velocity.x = 5;
+    enemy.switchSprite('run')
+  } else {
+    enemy.switchSprite('idle')
+  }
+
+  // jumping
+  if(enemy.velocity.y < 0){
+    enemy.switchSprite('jump')
+  } else if(enemy.velocity.y > 0){
+    enemy.switchSprite('fall')
   }
 
   // detect for collision
