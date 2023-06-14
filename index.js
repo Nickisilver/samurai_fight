@@ -72,6 +72,10 @@ const player = new Fighter({
       imageSrc:  './oak_woods_v1.0/Sprites/fall.png',
       framesMax: 2,
     },
+    attack1:{
+      imageSrc:  './oak_woods_v1.0/Sprites/Attack1.png',
+      framesMax: 6,
+    },
   }
 });
 
